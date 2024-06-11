@@ -1,0 +1,50 @@
+from collections import Counter, deque
+
+def min_steps_to_make_elements_equal(N, A):
+    # Count the frequency of each element
+    freq = Counter(A)
+    unique_elements = list(freq.keys())
+    
+    def bfs(target):
+        # Initialize the BFS queue
+        queue = deque()
+        visited = set()
+        steps = 0
+        
+        # Add all positions with the target element to the queue
+        for i in range(N):
+            if A[i] == target:
+                queue.append(i)
+                visited.add(i)
+        
+        while queue:
+            # Process current level
+            level_size = len(queue)
+            for _ in range(level_size):
+                current = queue.popleft()
+                
+                # Check neighbors (considering circular nature)
+                neighbors = [(current - 1) % N, (current + 1) % N]
+                for neighbor in neighbors:
+                    if A[neighbor] != target and neighbor not in visited:
+                        queue.append(neighbor)
+                        visited.add(neighbor)
+            
+            if len(visited) == N:
+                return steps
+            
+            steps += 1
+        
+        return float('inf')  # Should never reach here if logic is correct
+    
+    # Find the minimum steps required to convert array to each unique element
+    min_steps = float('inf')
+    for element in unique_elements:
+        min_steps = min(min_steps, bfs(element))
+    
+    return min_steps
+
+# Example usage:
+N = int(input())
+A = [int(input()) for _ in range(N)]
+print(min_steps_to_make_elements_equal(N, A))
